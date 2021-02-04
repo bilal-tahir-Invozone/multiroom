@@ -1,5 +1,7 @@
 defmodule MultiRoomsWeb.ChatChannel do
   use MultiRoomsWeb, :channel
+  require Protocol
+
 
   alias MultiRooms.Chats
 
@@ -11,11 +13,24 @@ defmodule MultiRoomsWeb.ChatChannel do
 
   end
   @impl true
-  def handle_info(:after_join, payload, socket) do
+  def handle_info(:after_join,socket) do
     "chat:"<> room = socket.topic
-    messages = Chats.list_messages_by_room(room)
-    payload = Map.merge(payload, %{"messages" => messages})
-    broadcast socket, "shout", payload
+    result = Chats.list_messages_by_room(room)
+    IO.inspect result
+
+    # messages = Map.from_struct(result)
+    # Enum.map(result.rows, fn row ->
+    #   Enum.zip(result.columns, Tuple.to_list(row))
+    #   |> Enum.into(%{})
+    #   |> JSON.encode
+    #   |> push(socket, "shout")
+    # end)
+
+    push(socket, "shout", %{result: result})
+    # payload = Map.merge(payload, %{"messages" => messages})
+    # IO.puts "here is after join"
+
+    # broadcast socket, "shout", Jason.encode(result)
     {:noreply, socket}
   end
 
@@ -24,11 +39,17 @@ defmodule MultiRoomsWeb.ChatChannel do
     "chat:"<> room = socket.topic
     payload = Map.merge(payload, %{"room" => room})
     Chats.create_message(payload)
-    # IO.puts "hello this is payload : #{payload}"
+    IO.puts "here is data post"
+
     broadcast socket, "shout", payload
 
-    # IO.puts "this is payload :" <> payload
     {:noreply, socket}
   end
 
+
+
+end
+
+defmodule B do
+  defstruct [:name, :body]
 end
