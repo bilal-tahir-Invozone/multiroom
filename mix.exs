@@ -45,6 +45,7 @@ defmodule MultiRooms.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:delta_crdt, "~> 0.5.0"},
+      {:gen_stage, "~> 1.0.0"},
       {:plug_cowboy, "~> 2.0"}
     ]
   end
