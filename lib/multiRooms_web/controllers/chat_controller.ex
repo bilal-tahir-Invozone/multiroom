@@ -7,4 +7,9 @@ defmodule MultiRoomsWeb.ChatController do
     messages = Chats.list_messages_by_room(room)
     render(conn, "show.html", room: room, messages: messages)
   end
+
+  def delete(conn, %{"id" => room}) do
+    delt = Chats.del_room_id(room)
+    render(conn, "delete.html", room: room, delete: delt)
+  end
 end

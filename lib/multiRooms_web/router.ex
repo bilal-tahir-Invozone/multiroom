@@ -16,7 +16,7 @@ defmodule MultiRoomsWeb.Router do
   scope "/", MultiRoomsWeb do
     pipe_through :browser
 
-    resources "/chat", ChatController, only: [:show]
+    resources "/chat", ChatController, only: [:show , :delete]
     get "/", PageController, :index
   end
 

@@ -7,6 +7,9 @@ defmodule MultiRooms.Chats do
   alias MultiRooms.Repo
 
   alias MultiRooms.Chats.Message
+  def del_room_id(room) do
+    Repo.delete(room)
+  end
 
   def list_messages_by_room(room) do
     qry = from m in Message,
