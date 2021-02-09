@@ -15,10 +15,21 @@ defmodule MultiRoomsWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
+
+
+
   @impl true
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(%{"user" => user}, socket) do
+    # IO.puts "here is user "
+    # IO.inspect user
+    {:ok, assign(socket, :user, user)}
+
   end
+
+
+  # def connect(_params, socket, _connect_info) do
+  #   {:ok, socket}
+  # end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
   #

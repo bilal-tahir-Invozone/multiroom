@@ -13,6 +13,8 @@ defmodule MultiRooms.Application do
       MultiRoomsWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: MultiRooms.PubSub},
+
+      MultiRoomsWeb.Presence,
       # Start the Endpoint (http/https)
       MultiRoomsWeb.Endpoint
       # Start a worker by calling: MultiRooms.Worker.start_link(arg)

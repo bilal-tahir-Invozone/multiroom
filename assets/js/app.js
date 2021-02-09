@@ -13,6 +13,16 @@ import "../css/app.scss"
 
 //
 import "phoenix_html"
-import socket from "./socket"
+// import socket from "./socket"
+// import {Socket, Presence} from "phoenix"
+
+
+
+
+
+
+
+
+
 import Chat from "./chat"
-Chat.init(socket)
+Chat.init()

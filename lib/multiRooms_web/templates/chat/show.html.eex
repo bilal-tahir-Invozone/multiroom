@@ -1,4 +1,5 @@
 <h2> Room: <%= @room %></h2>
+<!-- Hello, <span id="User"><%= "hellos" %></span>! -->
 <%# # <%= link "Delete", to: Routes.chat_path(@conn, :delete), method: :delete %> 
 <div id ="chat-box"></div>
 <%= for msg <- @messages do%>
