@@ -45,14 +45,20 @@ defmodule MultiRoomsWeb.ChatChannel do
 
     "chat:"<> room = socket.topic
 
-    {:ok, id1} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap)
-    {:ok, id2} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap)
-    DeltaCrdt.set_neighbours(id1, [id2])
-    DeltaCrdt.set_neighbours(id2, [id1])
-    DeltaCrdt.mutate(id1, :add, [room, payload["body"]])
+    {:ok, user1} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, sync_interval: 3)
+    # {:ok, user2} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, sync_interval: 3)
+    # DeltaCrdt.set_neighbours(user1, [user2])
+    # DeltaCrdt.set_neighbours(user2, [user1])
+    # DeltaCrdt.read(user1)
+    # IO.inspect user1
+    # IO.inspect user2
+    # DeltaCrdt.set_neighbours(user1, [user2])
+    # DeltaCrdt.set_neighbours(id2, [id1])
+    DeltaCrdt.mutate(user1, :add, [room, payload["body"]])
     Process.sleep(10)
-    IO.inspect DeltaCrdt.read(id2)
-
+    # IO.puts "start"
+    # IO.inspect DeltaCrdt.read(user2)
+    # IO.puts "end"
     payload = Map.merge(payload, %{"room" => room})
     Chats.update_message( %{id: 50}, payload)
     broadcast socket, "shout", payload
