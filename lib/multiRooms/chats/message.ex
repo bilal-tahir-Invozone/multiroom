@@ -14,8 +14,15 @@ defmodule MultiRooms.Chats.Message do
 
   @doc false
   def changeset(message, attrs) do
+    # IO.puts "here is messages"
+    # IO.inspect message
+    # IO.puts "End"
+    # IO.puts "attrs"
+    # IO.inspect attrs
+    # IO.puts "End"
+
     message
-    |> cast(attrs, [:name, :body, :room])
-    |> validate_required([:name, :body, :room])
+    |> cast(attrs, [:body, :room])
+    |> validate_required([:body, :room])
   end
 end

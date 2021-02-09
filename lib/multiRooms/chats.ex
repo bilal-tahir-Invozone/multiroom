@@ -62,6 +62,7 @@ defmodule MultiRooms.Chats do
 
   """
   def create_message(attrs \\ %{}) do
+    # IO.inspect attrs
     %Message{}
     |> Message.changeset(attrs)
     |> Repo.insert()
@@ -79,8 +80,15 @@ defmodule MultiRooms.Chats do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_message(%Message{} = message, attrs) do
-    message
+  def update_message(message, attrs) do
+    # IO.puts "messages"
+    # IO.inspect message
+    # IO.puts "End"
+    # IO.puts "attrs"
+    # IO.inspect attrs
+    # IO.puts "End"
+
+    Repo.get(Message,message.id)
     |> Message.changeset(attrs)
     |> Repo.update()
   end

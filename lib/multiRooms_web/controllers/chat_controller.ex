@@ -5,6 +5,7 @@ defmodule MultiRoomsWeb.ChatController do
 
   def show(conn, %{"id" => room}) do
     messages = Chats.list_messages_by_room(room)
+    # IO.inspect messages
     render(conn, "show.html", room: room, messages: messages)
   end
 

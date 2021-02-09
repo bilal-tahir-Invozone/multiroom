@@ -1,14 +1,14 @@
 <h2> Room: <%= @room %></h2>
-<%# <%= link "Delete", to: Routes.chat_path(@conn, :delete), method: :delete %> %>
+<%# # <%= link "Delete", to: Routes.chat_path(@conn, :delete), method: :delete %> 
 <div id ="chat-box"></div>
 <%= for msg <- @messages do%>
-<p><b><%= msg.name %> : </b> <%= msg.body %></p>
+<p><%= msg.body %></p>
 <%end%>
 
 
 <%= form_for @conn, "#", [id: "chat-form"], fn f -> %>
-    <%= text_input f, :username, placeholder: "Username", id: "user-name" %>
-    <%= textarea f, :username, placeholder: "your comment", id: "user-msg" %>
+
+    <%= textarea f, :username, placeholder: "post", id: "user-msg" %>
     <%= submit "Post"%>
 
 <% end %>

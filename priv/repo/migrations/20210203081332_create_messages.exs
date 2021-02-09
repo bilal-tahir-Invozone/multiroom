@@ -3,7 +3,6 @@ defmodule MultiRooms.Repo.Migrations.CreateMessages do
 
   def change do
     create table(:messages) do
-      add :name, :string
       add :body, :text
       add :room, :string
 
