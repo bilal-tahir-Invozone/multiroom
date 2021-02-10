@@ -39,27 +39,43 @@ defmodule MultiRoomsWeb.ChatChannel do
 
     user_presence = Presence.list(socket)
     user_list = Map.keys(user_presence)
+    # IO.puts "here is users"
 
+    # IO.inspect :ets.info(:map_table)
+    # IO.inspect user_list
+    # IO.inspect socket.assigns.user
+    # IO.puts "Enddd"
     if Enum.member?(user_list, socket.assigns.user) do
+      # IO.puts "after check"
+      # IO.inspect user_list
 
       map = Enum.reduce user_list, %{}, fn x, acc ->
+
         {:ok, result} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, sync_interval: 3)
+        IO.inspect result
         Map.put(acc, x, result)
       end
-      map_table =
+
+
+
+
+      # IO.inspect keys
+      # map_table =
       if Enum.member?(:ets.all(), :map_table) == false do
-         :ets.new(:map_table, [:set, :public])
+        :ets.new(:map_table, [:set, :public, :named_table])
       end
-
-
-
-      # %__MODULE__{mapTable: map_table}
-      :ets.insert(map_table, {"map_key", map})
 
       for data <- Map.keys(map) do
-        IO.puts "making neighbors"
+        IO.puts "making neighbors "
+        # IO.inspect map[data]
+        # IO.inspect Map.values(map)
         DeltaCrdt.set_neighbours(map[data], Map.values(map))
+        # IO.puts "inserting data into table"
+        :ets.insert(:map_table, {"map_key", map})
+        # IO.inspect :ets.lookup(:map_table, "map_key")
       end
+      # %__MODULE__{mapTable: map_table}
+
     else
       IO.puts "this is a new members"
   end
@@ -67,12 +83,12 @@ defmodule MultiRoomsWeb.ChatChannel do
     "chat:"<> room = socket.topic
     result = Chats.list_messages_by_room(room)
     if result === [] do
-      IO.puts "it is empty"
+      # IO.puts "it is empty"
       result = %{:body => "demo", :room  => room}
       Chats.create_message(result)
       push(socket, "load", %{result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
     else
-      IO.puts "no it is not"
+      # IO.puts "no it is not"
       push(socket, "load", %{result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
     end
 
@@ -84,21 +100,42 @@ defmodule MultiRoomsWeb.ChatChannel do
 
   @impl true
   def handle_in("shout", payload, socket) do
-    IO.puts "here is socket"
+
+    # user_presence = Presence.list(socket)
+    # user_list = Map.keys(user_presence)
+    # IO.puts "here is socket "
     # IO.inspect socket.assigns.user
-    # IO.inspect :sendId
-    sender_id =  socket.assigns.user
-    # IO.puts "Endddddd"
-    # %{
-    #   user: socket.assigns.user,
-    #   body: message,
-    #   timestamp: :os.system_time(:milli_seconds)
-    # }
+    # fun = :ets.fun2ms(fn {username, _, langs} when length(langs) > 2 -> username end)
+    db_data = :ets.lookup(:map_table, "map_key")
+    # IO.puts "db data is"
+    # IO.inspect db_data
+    data = Enum.at(db_data, 0)
+    IO.inspect data
+    {"map_key", data} = data
+    # IO.inspect data["3960944"]
+    IO.inspect socket.assigns.user
+    # IO.inspect data[socket.assigns.user]
+
+    # IO.inspect :ets.select(:map_table, fun)
+    # for store_data <- db_data do
+      # IO.inspect store_data
+    # end
+    # IO.puts "Enddd"
+
+
+
+
+
+
+
+
 
     "chat:"<> room = socket.topic
-    # IO.puts "here is list of users"
-    # IO.puts "here is mmap"
-    # IO.inspect :ets.tab2list(:map_table)
+    DeltaCrdt.mutate(data[socket.assigns.user], :add, [room, payload["body"]])
+
+    # IO.inspect DeltaCrdt.read(data[socket.assigns.user])
+
+
 
     # db_data = :ets.lookup(map_table, "map_key")
     # IO.puts "here is data from db"
@@ -166,18 +203,18 @@ defmodule MultiRoomsWeb.ChatChannel do
     # IO.inspect user2
     # DeltaCrdt.set_neighbours(user1, [user2])
     # DeltaCrdt.set_neighbours(id2, [id1])
+    dcrdt = Map.values(DeltaCrdt.read(data[socket.assigns.user]))
+    dcrdt = Enum.at(dcrdt, 0)
 
     # Process.sleep(10)
-    # IO.puts "start"
-    # IO.inspect DeltaCrdt.read(user2)
-    # IO.puts "end"
+    payload = Map.put(payload, "body", dcrdt)
     payload = Map.merge(payload, %{"room" => room })
     Chats.update_message( %{id: 51}, payload)
 
-    payload = Map.merge(payload, %{"send_id" => sender_id})
-    IO.puts "here is payload"
-    IO.inspect payload
-    IO.puts "Endddddd"
+    # payload = Map.merge(payload, %{"sender_id" => sender_id})
+    # IO.puts "here is payload"
+    # IO.inspect payload
+    # IO.puts "Endddddd"
     broadcast socket, "shout", payload
 
     # push(socket, "shout", %{result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
