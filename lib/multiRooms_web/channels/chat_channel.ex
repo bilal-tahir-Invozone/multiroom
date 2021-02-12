@@ -238,8 +238,8 @@ defmodule MultiRoomsWeb.ChatChannel do
     # IO.puts "pay is here"
     # IO.inspect payload
     # room_id = String.to_integer(room)
-    Chats.update_message( %{id: 22}, payload)
-    # Chats.update_message( %{id: payload["id"]}, payload)
+    # Chats.update_message( %{id: 22}, payload)
+    Chats.update_message( %{id: payload["id"]}, payload)
     sender_id = socket.assigns.user
     payload = Map.merge(payload, %{"sender_id" => sender_id})
     # IO.puts "here is payload"
