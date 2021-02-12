@@ -8,10 +8,11 @@ defmodule MultiRoomsWeb.ChatView do
   end
 
   def render("chat.json", %{chat: chat}) do
-    %{body: chat.body,
-    id: chat.id,
-    name: chat.name,
-    room: chat.room}
+    %{
+        body: chat.body,
+        id: chat.id,
+        room: chat.room
+      }
   end
 
 

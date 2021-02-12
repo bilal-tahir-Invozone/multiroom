@@ -2,11 +2,11 @@ defmodule MultiRooms.Chats.Message do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:name , :body]}
+  @derive {Jason.Encoder, only: [ :body]}
 
   schema "messages" do
     field :body, :string
-    field :name, :string
+    # field :name, :string
     field :room, :string
 
     timestamps()

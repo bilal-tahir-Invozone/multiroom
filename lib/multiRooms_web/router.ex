@@ -10,12 +10,12 @@ defmodule MultiRoomsWeb.Router do
   end
 
   pipeline :api do
+    plug CORSPlug, origin: "*"
     plug :accepts, ["json"]
   end
 
   scope "/", MultiRoomsWeb do
     pipe_through :browser
-
     resources "/chat", ChatController, only: [:show , :delete]
     get "/", PageController, :index
   end
