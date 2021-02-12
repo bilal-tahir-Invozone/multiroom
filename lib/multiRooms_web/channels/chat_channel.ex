@@ -32,15 +32,18 @@ defmodule MultiRoomsWeb.ChatChannel do
   end
   @impl true
   def handle_info(:after_join, socket) do
+    # IO.puts "here is socket"
     # IO.inspect socket
+
     Presence.track(socket, socket.assigns.user, %{
+      # user: socket.assigns.user,
       online_at: :os.system_time(:milli_seconds)
     })
 
     user_presence = Presence.list(socket)
     user_list = Map.keys(user_presence)
     # IO.puts "here is users"
-
+    user_state(socket)
     # IO.inspect :ets.info(:map_table)
     # IO.inspect user_list
     # IO.inspect socket.assigns.user
@@ -77,19 +80,38 @@ defmodule MultiRoomsWeb.ChatChannel do
       # %__MODULE__{mapTable: map_table}
 
     else
-      IO.puts "this is a new members"
-  end
+      # IO.puts "this is a new members"
+      map = Enum.reduce user_list, %{}, fn x, acc ->
+
+        {:ok, result} = DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, sync_interval: 3)
+        IO.inspect result
+        Map.put(acc, x, result)
+      end
+      if Enum.member?(:ets.all(), :map_table) == false do
+        :ets.new(:map_table, [:set, :public, :named_table])
+      end
+
+      for data <- Map.keys(map) do
+        IO.puts "making neighbors "
+        # IO.inspect map[data]
+        # IO.inspect Map.values(map)
+        DeltaCrdt.set_neighbours(map[data], Map.values(map))
+        # IO.puts "inserting data into table"
+        :ets.insert(:map_table, {"map_key", map})
+        # IO.inspect :ets.lookup(:map_table, "map_key")
+      end
+    end
 
     "chat:"<> room = socket.topic
     result = Chats.list_messages_by_room(room)
     if result === [] do
       # IO.puts "it is empty"
-      result = %{:body => "demo", :room  => room}
+      result = %{:body => "demo", :room  => room, :id => room}
       Chats.create_message(result)
-      push(socket, "load", %{result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
+      push(socket, "load", %{active_users: user_list, result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
     else
       # IO.puts "no it is not"
-      push(socket, "load", %{result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
+      push(socket, "load", %{active_users: user_list, result: MultiRoomsWeb.ChatView.render("index.json", %{result: result})})
     end
 
 
@@ -97,6 +119,10 @@ defmodule MultiRoomsWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  defp user_state(socket) do
+    # Presence.list(socket)
+    broadcast socket, "presence_state", Presence.list(socket)
+  end
 
   @impl true
   def handle_in("shout", payload, socket) do
@@ -110,10 +136,10 @@ defmodule MultiRoomsWeb.ChatChannel do
     # IO.puts "db data is"
     # IO.inspect db_data
     data = Enum.at(db_data, 0)
-    IO.inspect data
+    # IO.inspect data
     {"map_key", data} = data
     # IO.inspect data["3960944"]
-    IO.inspect socket.assigns.user
+    # IO.inspect socket.assigns.user
     # IO.inspect data[socket.assigns.user]
 
     # IO.inspect :ets.select(:map_table, fun)
@@ -209,9 +235,13 @@ defmodule MultiRoomsWeb.ChatChannel do
     # Process.sleep(10)
     payload = Map.put(payload, "body", dcrdt)
     payload = Map.merge(payload, %{"room" => room })
-    Chats.update_message( %{id: 51}, payload)
-
-    # payload = Map.merge(payload, %{"sender_id" => sender_id})
+    # IO.puts "pay is here"
+    # IO.inspect payload
+    # room_id = String.to_integer(room)
+    # Chats.update_message( %{id: 21}, payload)
+    Chats.update_message( %{id: payload["id"]}, payload)
+    sender_id = socket.assigns.user
+    payload = Map.merge(payload, %{"sender_id" => sender_id})
     # IO.puts "here is payload"
     # IO.inspect payload
     # IO.puts "Endddddd"
