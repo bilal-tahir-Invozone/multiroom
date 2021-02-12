@@ -87,8 +87,10 @@ defmodule MultiRooms.Chats do
     # IO.puts "attrs"
     # IO.inspect attrs
     # IO.puts "End"
+    IO.puts "here is updating operation"
 
     Repo.get(Message,message.id)
+    |> IO.inspect
     |> Message.changeset(attrs)
     |> Repo.update()
   end

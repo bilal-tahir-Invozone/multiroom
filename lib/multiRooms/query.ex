@@ -1,6 +1,7 @@
 defmodule MultiRooms.Query do
   use GenStage
-
+  # @derive {Jason.Encoder, only: [:name , :body]}
+  # create index(:messages, [:room])
   # Client
   def start_link(socket), do: GenStage.start_link(__MODULE__, socket)
 

@@ -13,7 +13,7 @@ config :multiRooms,
 # Configures the endpoint
 config :multiRooms, MultiRoomsWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "gJzm25Zumiyz46Jd11Sk5e/2VZhWZLsuf8hAnAZYXHaTLy6w/GaXMg3h4h/LC6eC",
+  secret_key_base: "emTkBJVtoXBFiTV2oHNtR1yCT679JaOw18D99se+xcvIQOqtFqgTqB58TuGEccwZ",
   render_errors: [view: MultiRoomsWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: MultiRooms.PubSub,
   live_view: [signing_salt: "qET4B9nk"]

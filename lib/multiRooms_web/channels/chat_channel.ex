@@ -238,7 +238,7 @@ defmodule MultiRoomsWeb.ChatChannel do
     # IO.puts "pay is here"
     # IO.inspect payload
     # room_id = String.to_integer(room)
-    # Chats.update_message( %{id: 21}, payload)
+    # Chats.update_message( %{id: 22}, payload)
     Chats.update_message( %{id: payload["id"]}, payload)
     sender_id = socket.assigns.user
     payload = Map.merge(payload, %{"sender_id" => sender_id})
@@ -252,7 +252,20 @@ defmodule MultiRoomsWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  def handle_event("typing", _value, socket ) do
+    "chat:"<> room = socket.topic
+    topic = room
+    key   = socket.assigns.user
+    payload = %{typing: true}
+    metas =
+        Presence.get_by_key(topic, key)[:metas]
+        |> List.first()
+        |> Map.merge(payload)
 
+    Presence.update(self(), topic, key, metas)
+    IO.inspect Presence
+    {:noreply, socket}
+  end
 
   # def handle_in("edit", payload, socket) do
 

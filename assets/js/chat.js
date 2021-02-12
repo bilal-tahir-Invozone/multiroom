@@ -79,6 +79,9 @@ let Chat = {
             document.getElementById('user-msg').value = ''
 
         }
+        channel.on('typing' ,
+            console.log("typing")
+        )
         channel.on('shout', payload => {
             let chatBox = document.querySelector("#chat-box")
             let msgBlock = document.createElement("p")
